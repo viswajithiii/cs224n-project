@@ -11,20 +11,25 @@ sys.setdefaultencoding('UTF8')
 pattern = re.compile(r'[^0-9]')
 
 filePath = ''
+outfilename ='../../data/transformed/q.txt'
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "f:", ["filepath="])
+	opts, args = getopt.getopt(sys.argv[1:], "f:o:", ["filepath=","outfile="])
 except getopt.GetoptError:
 	print "Invalid or missing arguments"
 	sys.exit(2)
 for opt, arg in opts:
 	if opt in ("-f", "--filepath"):
 		filePath = arg
+	if opt in ("-o", "--outfile"):
+		outfilename = arg
 
 if filePath=='':
 	print "Provide path to all files"
 	sys.exit(2)
 
+print filePath
+print outfilename
 # List of [directory path, project name] lists
 list_of_all_project_names = []
 # Map from project name to highest day number reached
@@ -49,7 +54,11 @@ for root, dirnames, filenames in os.walk(filePath):
 # Now, walk over all files to get whatever you want
 projects_data = {} # We create a dictionary to be finally stored in json format for all the projects
 for root, dirnames, filenames in os.walk(filePath):
+	print len(filenames)
+	i = 0
 	for filename in filenames:
+		i += 1
+		print i, " of ", len(filenames)
 		if '_day-' not in filename:
 			continue
 		project_name = filename.split('_day-')[0]
@@ -84,9 +93,17 @@ for root, dirnames, filenames in os.walk(filePath):
 		#Reward currenty and reward amounts (in a list of [amount (integer), reward (text)] lists)
 		reward_currency, reward_amounts = get_rewards(soup)
 		
+		current_funds, target_funds = get_current_target_amounts(soup)
+
+		num_backers = get_num_backers(soup)
+
+		#State is the project scale, is a string, can be 'live', 'canceled', 'failed', 'successful'
+		#Ended is a boolean which states whether the project is ended. Is either True or False
+		state,ended = get_project_status(soup)
 		#print full_description
 		#print '\n\n\n\n\n\n'
 
+		faqs = get_project_faqs(soup)
 		# Add all the required information in projects_data (add/remove if required)
 		projects_data[project_name]["daily_snapshots"][day_number] = {
 			"blurb":blurb,
@@ -94,10 +111,17 @@ for root, dirnames, filenames in os.walk(filePath):
 			"risks":risks,
 			"reward_currency":reward_currency,
 			"reward_amounts":reward_amounts,
+			"current_pledged": current_funds,
+			"target_funds": target_funds,
+			"num_backers": num_backers,
+			"state": state,
+			"ended": ended,
+			"faqs":faqs,
 		}
 
+print "Collected all the data. Dumping to file ..."
 # Output the data collected. Each line is a json format for one project
-outfile = open('../../data/transformed/q.txt', 'w')
+outfile = open(outfilename, 'w')
 for project_name in projects_data:
 	outfile.write("%s\n" % (json.dumps(projects_data[project_name])))
 

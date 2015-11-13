@@ -67,3 +67,32 @@ def get_rewards(soup):
 			
 	return reward_currency, rewards_and_amounts
 	
+def get_current_target_amounts(soup):
+	pledged_div = soup.find("div", {"id":"pledged"})
+	target = float(pledged_div['data-goal'])
+	current = float(pledged_div['data-pledged'])
+	return current, target
+
+def get_num_backers(soup):
+	n_backers = int(soup.find("meta",{"property":"twitter:text:backers"})['content'])
+	return n_backers
+
+def get_project_status(soup):
+	main_content_tag = soup.find(id="main_content")	
+	attrlist = main_content_tag.get('class')
+	for attr in attrlist:
+		splitattr = attr.split('-')
+		if len(splitattr) < 3:
+			continue
+		if (splitattr[1] == 'ended'):
+			if (splitattr[2] == 'true'):
+				ended = True
+			else:
+				ended = False
+		if (splitattr[1] == 'state'):
+			state = splitattr[2]
+	return state,ended
+def get_project_faqs(soup):
+	faqs_tag = soup.find("ul",{"class":"faqs"})
+	print faqs_tag.get_text()
+	return faqs_tag.get_text()
