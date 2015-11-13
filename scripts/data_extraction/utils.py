@@ -74,7 +74,8 @@ def get_current_target_amounts(soup):
 	return current, target
 
 def get_num_backers(soup):
-	n_backers = int(soup.find("meta",{"property":"twitter:text:backers"})['content'])
+	n_backers_str = soup.find("meta",{"property":"twitter:text:backers"})['content']
+	n_backers = int(n_backers_str.replace(',',''))
 	return n_backers
 
 def get_project_status(soup):
