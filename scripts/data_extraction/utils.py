@@ -94,5 +94,5 @@ def get_project_status(soup):
 	return state,ended
 def get_project_faqs(soup):
 	faqs_tag = soup.find("ul",{"class":"faqs"})
-	print faqs_tag.get_text()
+#	print faqs_tag.get_text()
 	return faqs_tag.get_text()
