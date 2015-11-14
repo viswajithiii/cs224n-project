@@ -63,7 +63,7 @@ for root, dirnames, filenames in os.walk(filePath):
 	for filename in filenames:
 		i += 1
 		print i, " of ", len(filenames)
-#		if i < 33000:
+#		if i < 50000:
 #			continue
 		if '_day-' not in filename:
 			continue
