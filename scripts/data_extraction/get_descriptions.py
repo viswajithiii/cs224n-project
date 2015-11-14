@@ -53,6 +53,10 @@ for root, dirnames, filenames in os.walk(filePath):
 			
 # Now, walk over all files to get whatever you want
 projects_data = {} # We create a dictionary to be finally stored in json format for all the projects
+
+#This is for purged projects, which just disappear from Kickstarter, and which break BeautifulSoup.
+purged_projects = {}
+
 for root, dirnames, filenames in os.walk(filePath):
 	print len(filenames)
 	i = 0
@@ -65,6 +69,8 @@ for root, dirnames, filenames in os.walk(filePath):
 		day_number = int(filename.split('_day-')[1].split('_')[0])
 		print project_name, " ", day_number
 
+		if project_name in purged_projects:
+			continue
 		# Add the project if we havent seen it before
 		if project_name not in projects_data:
 			projects_data[project_name] = {}
@@ -93,13 +99,20 @@ for root, dirnames, filenames in os.walk(filePath):
 		#Reward currenty and reward amounts (in a list of [amount (integer), reward (text)] lists)
 		reward_currency, reward_amounts = get_rewards(soup)
 		
-		current_funds, target_funds = get_current_target_amounts(soup)
-
-		num_backers = get_num_backers(soup)
 
 		#State is the project scale, is a string, can be 'live', 'canceled', 'failed', 'successful'
 		#Ended is a boolean which states whether the project is ended. Is either True or False
 		state,ended = get_project_status(soup)
+		
+		#Purged projects are useless, they just disappear
+		if state == 'purged':
+			purged_projects[project_name] = True
+			continue
+
+		current_funds, target_funds = get_current_target_amounts(soup)
+
+		num_backers = get_num_backers(soup)
+
 		#print full_description
 		#print '\n\n\n\n\n\n'
 
@@ -123,6 +136,8 @@ print "Collected all the data. Dumping to file ..."
 # Output the data collected. Each line is a json format for one project
 outfile = open(outfilename, 'w')
 for project_name in projects_data:
+	if project_name in purged_projects:
+		continue
 	outfile.write("%s\n" % (json.dumps(projects_data[project_name])))
 
 
