@@ -63,6 +63,8 @@ for root, dirnames, filenames in os.walk(filePath):
 	for filename in filenames:
 		i += 1
 		print i, " of ", len(filenames)
+#		if i < 33000:
+#			continue
 		if '_day-' not in filename:
 			continue
 		project_name = filename.split('_day-')[0]
@@ -97,7 +99,11 @@ for root, dirnames, filenames in os.walk(filePath):
 		#Text under risks
 		risks = get_risks(soup)
 		#Reward currenty and reward amounts (in a list of [amount (integer), reward (text)] lists)
-		reward_currency, reward_amounts = get_rewards(soup)
+		try:
+			reward_currency, reward_amounts = get_rewards(soup)
+		except IndexError: #Comes up in some fringe cases where our project is taken down in an inconsistent way.
+			purged_projects[project_name] = True
+			continue
 		
 
 		#State is the project scale, is a string, can be 'live', 'canceled', 'failed', 'successful'
@@ -109,8 +115,11 @@ for root, dirnames, filenames in os.walk(filePath):
 			purged_projects[project_name] = True
 			continue
 
-		current_funds, target_funds = get_current_target_amounts(soup)
-
+		try:
+			current_funds, target_funds = get_current_target_amounts(soup)
+		except TypeError: #This comes up in some fringe cases where our project is taken down for some dispute or whatever.
+			purged_projects[project_name] = True
+			continue
 		num_backers = get_num_backers(soup)
 
 		#print full_description
@@ -139,5 +148,3 @@ for project_name in projects_data:
 	if project_name in purged_projects:
 		continue
 	outfile.write("%s\n" % (json.dumps(projects_data[project_name])))
-
-
