@@ -108,7 +108,11 @@ for root, dirnames, filenames in os.walk(filePath):
 
 		#State is the project scale, is a string, can be 'live', 'canceled', 'failed', 'successful'
 		#Ended is a boolean which states whether the project is ended. Is either True or False
-		state,ended = get_project_status(soup)
+		try:
+			state,ended = get_project_status(soup)
+		except AttributeError:
+			purged_projects[project_name] = True
+			continue
 		
 		#Purged projects are useless, they just disappear
 		if state == 'purged':
