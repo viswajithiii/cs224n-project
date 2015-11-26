@@ -14,6 +14,7 @@ for letter in alphabet:
     unfinished = 0
     both = 0
     suspended = 0
+    live = 0
     for line in inputfile:
         jsonobj = json.loads(line)
         ds = jsonobj['daily_snapshots']
@@ -26,18 +27,22 @@ for letter in alphabet:
         flag_c = False
         flag_e = False
         flag_s = False
+        flag_l = False
         if ds[last_day]['state'] == 'canceled':
             canceled += 1
             flag_c = True
         if ds[last_day]['state'] == 'suspended':
             suspended += 1
             flag_s = True
+        if ds[last_day]['state'] == 'live':
+            live += 1
+            flag_l = True
         if not ds[last_day]['ended']:
             unfinished += 1
             flag_e = True
         if flag_c and flag_e:
             both += 1
-        if not (flag_c or flag_e or flag_s):
+        if not (flag_c or flag_e or flag_s or flag_l):
             outputfile.write(line)
         total += 1
 
@@ -46,4 +51,5 @@ for letter in alphabet:
     print 'Unfinished:', unfinished
     print 'Canceled:', canceled
     print 'Suspended:', suspended
-    print 'Good projects:', total -(unfinished+canceled+suspended) + both
+    print 'Live:', live
+    print 'Good projects:', total -(unfinished+canceled+suspended+live) + both
