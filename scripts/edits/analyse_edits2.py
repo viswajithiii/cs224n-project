@@ -45,15 +45,18 @@ def main():
     if filePath=='':
         print "Provide path to all files"
         sys.exit(2)
-    if filePath[-1] != '/':
-        filePath.append('/')
+#    if filePath[-1] != '/':
+#        filePath.append('/')
 
     edit_count_list = []
     fraction_obtained = []
     diffval_list = []
     with open(filePath, 'r') as project_file:
         # for each project
+        i = 0
         for line in project_file:
+            print i
+            i += 1
             project_data = json.loads(line)
             #print project_data["project_name"]
 
