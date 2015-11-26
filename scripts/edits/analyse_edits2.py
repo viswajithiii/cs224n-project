@@ -51,12 +51,15 @@ def main():
     edit_count_list = []
     fraction_obtained = []
     diffval_list = []
+    exceeds_threshold_count = 0
     with open(filePath, 'r') as project_file:
         # for each project
         i = 0
         for line in project_file:
             print i
             i += 1
+#            if i > 100:
+#                break
             project_data = json.loads(line)
             #print project_data["project_name"]
 
@@ -64,6 +67,8 @@ def main():
             edit_count = 0
 
             previous_snapshot = None
+            exceeds_threshold = False
+            threshold = 0.9
             for day_number in sorted(project_data["daily_snapshots"], key=lambda x: int(x)):
                 #print day_number
                 current_snapshot = project_data["daily_snapshots"][day_number]
@@ -73,18 +78,25 @@ def main():
                         edit_count += 1
                         difference = 1.0 - SequenceMatcher(None, previous_snapshot["full_description"], current_snapshot["full_description"]).ratio()
                         diffval_list.append(difference)
+                        if difference > threshold:
+                            exceeds_threshold = True  
+                            break
                         #lines_changed += calculate_lines_changed(previous_snapshot["full_description"], current_snapshot["full_description"])
 
                 previous_snapshot = current_snapshot
-            edit_count = float(edit_count) / (len(project_data["daily_snapshots"])-1)
+#            edit_count = float(edit_count) / (len(project_data["daily_snapshots"])-1)
             #print edit_count
-            edit_count_list.append(edit_count)
+#            edit_count_list.append(edit_count)
+            if exceeds_threshold:
+                exceeds_threshold_count += 1
 #                ds = project_data['daily_snapshots']
 #                last_day = unicode(max([int(a) for a in ds.keys()]))
 #                fraction_obtained.append(float(ds[last_day]['current_pledged'])/float(ds[last_day]['target_funds']))
      
 
-    plt.hist(diffval_list)
-    plt.show()
+    print 'HERE'
+    print exceeds_threshold_count
+#    plt.hist(diffval_list)
+#    plt.show()
 
 main()
