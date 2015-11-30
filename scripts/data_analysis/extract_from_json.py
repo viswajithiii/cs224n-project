@@ -1,15 +1,17 @@
 import sys
 import json
 import matplotlib.pyplot as plt
+import numpy as np
+import pickle
 
 alphabet = 'abcdefghiklmnopqrstuvwxyz'
-alphabet = 'abc'
+alphabet = 'edited_projects'
 total = 0
 successful = 0
 fraction_obtained = []
 for letter in alphabet:
     print letter
-    inputfilename = '../../data/transformed/'+ letter + '.json'
+    inputfilename = '../../data/transformed/edited_projects.json'
     if len(sys.argv) > 1:
         inputfilename = sys.argv[1]
     inputfile = open(inputfilename,'r')
@@ -23,9 +25,12 @@ for letter in alphabet:
         fraction_obtained.append(float(ds[last_day]['current_pledged'])/float(ds[last_day]['target_funds']))
     print 'Total:', total
     print 'Successful:', successful
+    break
+
+print fraction_obtained
 
 print 'Total:', total
 print 'Successful:', successful
-print fraction_obtained
-plt.hist(fraction_obtained,bins=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,2.0,3.0,4.0,5.0])
-plt.show()
+pickle.dump(fraction_obtained,open('fraction_obtained_per_edited_project.pkl','w'))
+#plt.hist(fraction_obtained,bins=np.arange(0,5,0.1).tolist())
+#plt.show()
