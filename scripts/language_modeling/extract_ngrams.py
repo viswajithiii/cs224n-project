@@ -51,7 +51,7 @@ def main():
     freq_mat = count_vect.fit_transform([' '.join(all_sentences)])    
     print freq_mat.shape
 #    print count_vect.vocabulary_
-    pickle.dump(count_vect.vocabulary_,open('vocabulary_freqs.pkl','w'))
+    pickle.dump(count_vect,open('count_vect.pkl','w'))
     print 'Number of unique tokens:', len(count_vect.vocabulary_.keys())
     print 'Total number of descriptions:', total_descs
 #    print freq_mat
