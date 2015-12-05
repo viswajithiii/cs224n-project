@@ -2,6 +2,7 @@ from sklearn import linear_model
 from sklearn import cross_validation
 from sklearn import ensemble
 from sklearn import preprocessing
+from sklearn.metrics import confusion_matrix
 
 def split_comma(string):
     return map(float, str.split(string, ','))
@@ -41,4 +42,5 @@ def main():
     print "Test accuracy = %f" % (test_accuracy)
 
     print rand_for.feature_importances_
+    print confusion_matrix(y_test, rand_for.predict(X_test))
 main()

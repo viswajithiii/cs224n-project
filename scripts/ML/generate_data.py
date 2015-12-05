@@ -73,6 +73,7 @@ def main():
 
             previous_snapshot = None
             days_list = sorted(project_data["daily_snapshots"], key=lambda x: int(x))
+            gain_threshold = 0.2
             for day_number in days_list:
                 #print day_number
                 current_day = int(day_number)
@@ -86,10 +87,12 @@ def main():
                         gain = calculate_gain(project_data, current_day, days_list)
                         if (gain != -1):
                             #print "data point"
-                            if gain > 1:
+                            if gain > 1 + threshold:
                                 label = 1
-                            else:
+                            elif gain < 1 -threshold:
                                 label = 0
+                            else:
+                                continue
                             comma = False
                             for value in data_vec:
                                 if comma:
