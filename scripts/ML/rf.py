@@ -1,5 +1,6 @@
 from sklearn import linear_model
 from sklearn import cross_validation
+from sklearn import ensemble
 from sklearn import preprocessing
 
 def split_comma(string):
@@ -31,15 +32,13 @@ def main():
     baseline = float(max(ones, len(y_test) - ones)) / len(y_test)
     print "Baseline = %f" % (baseline)
 
+    rand_for = ensemble.RandomForestClassifier(max_depth=10)
+    rand_for.fit(X_train,y_train)
 
-    log_reg = linear_model.LogisticRegression()
-    log_reg.fit(X_train,y_train)
-
-    train_accuracy = log_reg.score(X_train, y_train)
-    test_accuracy = log_reg.score(X_test, y_test)
+    train_accuracy = rand_for.score(X_train, y_train)
+    test_accuracy = rand_for.score(X_test, y_test)
     print "Train accuracy = %f" % (train_accuracy)
     print "Test accuracy = %f" % (test_accuracy)
 
-    print log_reg.coef_
-    print log_reg.intercept_
+    print rand_for.feature_importances_
 main()
