@@ -1,6 +1,7 @@
 from sklearn import linear_model
 from sklearn import cross_validation
 from sklearn import preprocessing
+from sklearn.metrics import confusion_matrix
 
 def split_comma(string):
     return map(float, str.split(string, ','))
@@ -31,9 +32,9 @@ def main():
     baseline = float(max(ones, len(y_test) - ones)) / len(y_test)
     print "Baseline = %f" % (baseline)
 
-
     log_reg = linear_model.LogisticRegression()
     log_reg.fit(X_train,y_train)
+    
 
     train_accuracy = log_reg.score(X_train, y_train)
     test_accuracy = log_reg.score(X_test, y_test)
@@ -42,4 +43,8 @@ def main():
 
     print log_reg.coef_
     print log_reg.intercept_
+
+
+    print confusion_matrix(y_test, log_reg.predict(X_test))
+    
 main()
