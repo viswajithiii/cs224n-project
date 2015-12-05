@@ -48,7 +48,7 @@ def main():
 #    if filePath[-1] != '/':
 #        filePath.append('/')
 
-    for threshold in np.arange(0.3,1,0.1).tolist():
+    for threshold in np.arange(0.9,1,0.1).tolist():
         print 'Threshold:',threshold
         edit_count_list = []
         fraction_obtained = []
@@ -61,7 +61,7 @@ def main():
             for line in project_file:
                 i += 1
                 if i %1000 == 0:
-                    print i
+                    sys.stderr.write('%d\n' %(i))
     #            if i > 100:
     #                break
                 project_data = json.loads(line)
@@ -72,6 +72,13 @@ def main():
 
                 previous_snapshot = None
                 exceeds_threshold = False
+                ds = project_data['daily_snapshots']
+                last_day = unicode(max([int(a) for a in ds.keys()]))
+                successful = ds[last_day]['state'] == 'successful'
+
+                if not successful:
+                    continue
+
                 for day_number in sorted(project_data["daily_snapshots"], key=lambda x: int(x)):
                     #print day_number
                     current_snapshot = project_data["daily_snapshots"][day_number]
@@ -81,15 +88,16 @@ def main():
                             edit_count += 1
                             difference = 1.0 - SequenceMatcher(None, previous_snapshot["full_description"], current_snapshot["full_description"]).ratio()
                             diffval_list.append(difference)
-                            if difference > threshold:
+                            if difference > threshold and successful:
                                 exceeds_threshold = True  
-                                """
-                                print 'EXCEEDED THRESHOLD'
+                                print 'EXCEEDED THRESHOLD: %s' %(project_data["project_name"])
+                                print 'Day ', day_number, ' of ', last_day
+                                print 'Raised:', current_snapshot["current_pledged"]
+                                print 'Target:',current_snapshot["target_funds"]
                                 print 'Previous:'
                                 print repr(previous_snapshot["full_description"])
                                 print 'Current:'
                                 print repr(current_snapshot["full_description"])
-                                """
                                 break
                             #lines_changed += calculate_lines_changed(previous_snapshot["full_description"], current_snapshot["full_description"])
 

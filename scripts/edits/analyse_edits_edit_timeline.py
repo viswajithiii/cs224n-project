@@ -60,7 +60,8 @@ def main():
         # for each project
         i = 0
         for line in project_file:
-            print i
+            if i%100 == 0:
+                print i
             i += 1
             project_data = json.loads(line)
             #print project_data["project_name"]
@@ -88,6 +89,8 @@ def main():
     avg_edit_point = sum(edit_points) / len(edit_points)
     print avg_edit_point
     plt.hist(edit_points)
+    plt.xlabel('Fraction of project elapsed')
+    plt.ylabel('Number of edits')
     plt.show()
 
 main()

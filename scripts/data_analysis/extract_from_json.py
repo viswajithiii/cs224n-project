@@ -17,6 +17,7 @@ for letter in alphabet:
     inputfile = open(inputfilename,'r')
     for line in inputfile:
         total += 1
+        print total
         jsonobj = json.loads(line)
         ds = jsonobj['daily_snapshots']
         last_day = unicode(max([int(a) for a in ds.keys()]))

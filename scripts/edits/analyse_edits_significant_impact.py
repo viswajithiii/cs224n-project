@@ -31,6 +31,7 @@ def main():
 
     #gain_thresholds = [0.0, 0.2, 0.4, 0.6, 0.8, 1, 1.2]
     gain_thresholds = [1.2]
+    all_gains = []
     for threshold in gain_thresholds:
         high_gain_edit = 0
         low_gain_edit = 0
@@ -39,7 +40,7 @@ def main():
             # for each project
             i = 0
             for line in project_file:
-                #print i
+                print i
                 i += 1
                 project_data = json.loads(line)
                 #print project_data["project_name"]
@@ -61,12 +62,15 @@ def main():
                                 future_pledged_per_day = (get_pledged_amount(project_data, int(days_list[-1])) - get_pledged_amount(project_data, current_day + 1)) / (int(days_list[-1]) - current_day - 1)
                                 overall_pledged_per_day = (get_pledged_amount(project_data, int(days_list[-1])) - get_pledged_amount(project_data, 0)) / (int(days_list[-1]))
                                 if overall_pledged_per_day < 0:
+                                    """
                                     print get_pledged_amount(project_data,int(days_list[-1]))
                                     print get_pledged_amount(project_data,0)
                                     print days_list
                                     print days_list[-1]
-                                    assert False
+                                    """
+                                    continue
                                 gain = (future_pledged_per_day - past_pledged_per_day) / overall_pledged_per_day
+                                """
                                 if gain > 10:
                                     print "\nHIGH GAIN FOUND!"
                                     print "Gain = %f, past_pledged_per_day = %f, future_pledged_per_day = %f, overall_pledged_per_day = %f" % (gain, past_pledged_per_day, future_pledged_per_day, overall_pledged_per_day)
@@ -74,12 +78,14 @@ def main():
                                     print previous_snapshot["full_description"]
                                     print "Current:"
                                     print current_snapshot["full_description"]
+                                """
                                 if gain > threshold:
                                     high_gain_edit += 1
                                 elif gain < -threshold:
                                     high_loss_edit += 1
                                 else:
                                     low_gain_edit += 1
+                                all_gains.append(gain)
                             except ZeroDivisionError:
                                 pass
                             except KeyError:
@@ -90,4 +96,5 @@ def main():
         print "high_gain_edit = %0.3f" % (float(high_gain_edit) / total_edits) 
         print "high_loss_edit = %0.3f" % (float(high_loss_edit) / total_edits) 
         print "low_gain_edit = %0.3f" % (float(low_gain_edit) / total_edits) 
+        pickle.dump(all_gains,open('all_gains.pkl','w'))
 main()
