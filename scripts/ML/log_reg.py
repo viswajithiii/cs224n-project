@@ -35,7 +35,6 @@ def main():
     log_reg = linear_model.LogisticRegression()
     log_reg.fit(X_train,y_train)
     
-
     train_accuracy = log_reg.score(X_train, y_train)
     test_accuracy = log_reg.score(X_test, y_test)
     print "Train accuracy = %f" % (train_accuracy)
@@ -45,6 +44,18 @@ def main():
     print log_reg.intercept_
 
 
-    print confusion_matrix(y_test, log_reg.predict(X_test))
+#    print log_reg.predict(X_test)
+    cm = confusion_matrix(y_test, log_reg.predict(X_test))
+    print cm
+    print 'Class\tPrecision\tRecall\t\tF1'
+    P0 = float(cm[0][0])/(cm[0][0]+cm[1][0])
+    R0 = float(cm[0][0])/(cm[0][0]+cm[0][1])
+    F0 = 2*P0*R0/(P0+R0)
+    P1 = float(cm[1][1])/(cm[1][1]+cm[0][1])
+    R1 = float(cm[1][1])/(cm[1][1]+cm[1][0])
+    F1 = 2*P1*R1/(P1+R1)
+    print '0\t%f\t%f\t%f'%(P0,R0,F0)
+    print '1\t%f\t%f\t%f'%(P1,R1,F1)
+    
     
 main()
