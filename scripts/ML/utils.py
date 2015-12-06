@@ -45,21 +45,17 @@ def get_sentiment_score(text):
     return sentimentPolarityResult
 
 
-def search_text_in_list(liwc_list,words):
-    
-    count = 0
-    for word in words:
-        for regex_ in liwc_list:
-            if regex_[-1] == '*':
-                regex = '^'+regex_[:-1]
-            else:
-                regex = '^'+regex_+'$'
-     
-            match = re.search(regex,word)
-            if match:
-                count += 1
-                break
-    #                print 'Matched!',regex
+def search_text_in_list(regex_sets_prefix,regex_set_exact,words):
+
+   count = 0
+   for word in words:
+        if word in regex_set_exact:
+            count += 1
+        else:
+            for length in range(len(word)):
+                if word[:length] in regex_sets_prefix:
+                    count += 1
+                    break
     return count
 
 def get_liwc_features(text):
@@ -71,7 +67,16 @@ def get_liwc_features(text):
 
     toReturn = []
     for category in category_list:
-        count = search_text_in_list(liwc_dict[category],words)
+        liwc_list = liwc_dict[category]
+        regex_sets_prefix = set()
+        regex_set_exact = set()
+        for regex in liwc_list:
+            if regex[-1] == '*':
+                regex_sets_prefix.add(regex[:-1])
+            else:
+                regex_set_exact.add(regex)
+     
+        count = search_text_in_list(regex_sets_prefix,regex_set_exact,words)
         toReturn.append(count)
 
     return toReturn
