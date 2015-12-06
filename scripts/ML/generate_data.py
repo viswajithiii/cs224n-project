@@ -12,6 +12,7 @@ from utils import *
 DIFF_THRESHOLD = 0
 
 
+
 def get_pledged_amount(project_data, day_number):
     return float(project_data["daily_snapshots"]["%d" % (day_number)]["current_pledged"])
 
