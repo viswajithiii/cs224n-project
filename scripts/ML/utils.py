@@ -47,18 +47,21 @@ def get_sentiment_score(text):
 
 def search_text_in_list(liwc_list,words):
     
-    for regex_ in liwc_list:
-        if regex_[-1] == '*':
-            regex = '^'+regex_[:-1]
-        else:
-            regex = '^'+regex_+'$'
-        for word in words:
+    count = 0
+    for word in words:
+        for regex_ in liwc_list:
+            if regex_[-1] == '*':
+                regex = '^'+regex_[:-1]
+            else:
+                regex = '^'+regex_+'$'
+     
             match = re.search(regex,word)
             if match:
-                print 'Matched!',regex
-                return True
-    return False
-    
+                count += 1
+                break
+    #                print 'Matched!',regex
+    return count
+
 def get_liwc_features(text):
     category_list = ['Posemo']
     # remove punctuations and tokenize
@@ -68,8 +71,8 @@ def get_liwc_features(text):
 
     toReturn = []
     for category in category_list:
-        match_exists = search_text_in_list(liwc_dict[category],words)
-        toReturn.append(1 if match_exists else 0)
+        count = search_text_in_list(liwc_dict[category],words)
+        toReturn.append(count)
 
     return toReturn
         
