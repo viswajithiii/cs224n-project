@@ -35,7 +35,7 @@ def generate_data_vec(previous_snapshot, current_snapshot):
     liwc_features_curr[0] -= liwc_features_pre[0]
     features.extend(liwc_features_pre)
     features.extend(liwc_features_curr)
-    print features
+#    print features
 #    print features
     return features
 
@@ -119,5 +119,7 @@ def main():
                 previous_snapshot = current_snapshot
     print len(features[0])
     print sum(features[0])            
+    print len(features[1])
+    print sum(features[1])
 
 main()

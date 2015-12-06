@@ -52,7 +52,7 @@ def search_text_in_list(regex_sets_prefix,regex_set_exact,words):
         if word in regex_set_exact:
             count += 1
         else:
-            for length in range(len(word)):
+            for length in range(1,len(word)+1):
                 if word[:length] in regex_sets_prefix:
                     count += 1
                     break
