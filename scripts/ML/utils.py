@@ -59,7 +59,7 @@ def search_text_in_list(regex_sets_prefix,regex_set_exact,words):
     return count
 
 def get_liwc_features(text):
-    category_list = ['Posemo']
+    category_list = liwc_dict.keys()
     # remove punctuations and tokenize
     words = re.findall(r'\w+', text,flags = re.UNICODE | re.LOCALE) 
     # lower case the words   

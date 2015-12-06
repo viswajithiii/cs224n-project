@@ -32,7 +32,8 @@ def generate_data_vec(previous_snapshot, current_snapshot):
 #    print liwc_features_curr
 #    print liwc_features_pre
     liwc_features_diff = [0]*len(liwc_features_curr)
-    liwc_features_diff[0] = liwc_features_curr[0] - liwc_features_pre[0]
+    for i in range(len(liwc_features_pre)):
+        liwc_features_diff[i] = liwc_features_curr[i] - liwc_features_pre[i]
     features.extend(liwc_features_diff)
 #    print features
 #    print features
