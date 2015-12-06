@@ -32,9 +32,9 @@ def generate_data_vec(previous_snapshot, current_snapshot):
     liwc_features_pre= get_liwc_features(previous_snapshot["full_description"])
 #    print liwc_features_curr
 #    print liwc_features_pre
-    liwc_features_pre[0] -= liwc_features_curr[0]
-    features.extend(liwc_features_curr)
+    liwc_features_curr[0] -= liwc_features_pre[0]
     features.extend(liwc_features_pre)
+    features.extend(liwc_features_curr)
     print features
 #    print features
     return features
