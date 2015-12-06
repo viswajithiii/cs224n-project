@@ -47,8 +47,8 @@ def get_sentiment_score(text):
 
 def search_text_in_list(regex_sets_prefix,regex_set_exact,words):
 
-   count = 0
-   for word in words:
+    count = 0
+    for word in words:
         if word in regex_set_exact:
             count += 1
         else:
