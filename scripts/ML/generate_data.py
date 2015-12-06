@@ -66,7 +66,9 @@ def main():
         print "Provide path to all files"
         sys.exit(2)
 
-    desc_diff_dict = {}
+    #desc_diff_dict = {}
+    desc_diff_dict = pickle.load(open('desc_diff_dict.pickle', 'r'))
+    
     with open(filePath, 'r') as project_file:
         # for each project
         i = 0
@@ -76,15 +78,14 @@ def main():
             i += 1
             project_data = json.loads(line)
             project_name = project_data["project_name"]
-            desc_diff_dict[project_name] = {}
-
+            #desc_diff_dict[project_name] = {}
             lines_changed = 0
             edit_count = 0
 
             previous_snapshot = None
             days_list = sorted(project_data["daily_snapshots"], key=lambda x: int(x))
             gain_threshold = 0
-            diff_threshold = 0
+            diff_threshold = 0.4
             features = []
             for day_number in days_list:
                 #print day_number
@@ -94,11 +95,12 @@ def main():
                     #find the diff
                     if previous_snapshot["full_description"] != current_snapshot["full_description"]:
                         #print "found edit"
-                        difference = 1.0 - SequenceMatcher(None, previous_snapshot["full_description"], current_snapshot["full_description"]).ratio()
-                        desc_diff_dict[project_name][day_number] = difference
-                        previous_snapshot = current_snapshot
-                        continue
-                        if difference > diff_threshold:
+                        #difference = 1.0 - SequenceMatcher(None, previous_snapshot["full_description"], current_snapshot["full_description"]).ratio()
+                        #desc_diff_dict[project_name][day_number] = difference
+                        #previous_snapshot = current_snapshot
+                        #continue
+                        difference = float(desc_diff_dict[project_name][day_number])
+                        if difference < diff_threshold:
                             previous_snapshot = current_snapshot
                             continue
                         edit_count += 1
@@ -127,6 +129,6 @@ def main():
 
 
                 previous_snapshot = current_snapshot
-            pickle.dump(desc_diff_dict, open('desc_diff_dict.pickle', 'w'))
+            #pickle.dump(desc_diff_dict, open('desc_diff_dict.pickle', 'w'))
 
 main()
