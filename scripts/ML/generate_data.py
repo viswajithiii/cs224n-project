@@ -72,7 +72,8 @@ def main():
     with open(filePath, 'r') as project_file:
         # for each project
         i = 0
-        for line in project_file:
+        lines = project_file.readlines()
+        for line in lines:
             print i
             i += 1
             project_data = json.loads(line)
