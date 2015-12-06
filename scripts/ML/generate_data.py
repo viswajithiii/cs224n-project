@@ -18,6 +18,7 @@ def get_pledged_amount(project_data, day_number):
 def generate_data_vec(previous_snapshot, current_snapshot):
     features = []
 
+    """
     concreteness_feature = get_concreteness_score(current_snapshot["full_description"]) - get_concreteness_score(previous_snapshot["full_description"])
     features.append(concreteness_feature)
 
@@ -26,7 +27,12 @@ def generate_data_vec(previous_snapshot, current_snapshot):
 
     sentiment_feature = get_sentiment_score(current_snapshot["full_description"]) - get_sentiment_score(previous_snapshot["full_description"]) 
     features.append(sentiment_feature)
-
+    """
+    liwc_features = get_liwc_features(current_snapshot["full_description"])
+    features.extend(liwc_features)
+    print features
+    print len(features)
+    print sum(features)
     return features
 
 def calculate_gain(project_data, current_day, days_list):
@@ -73,7 +79,7 @@ def main():
 
             previous_snapshot = None
             days_list = sorted(project_data["daily_snapshots"], key=lambda x: int(x))
-            gain_threshold = 0.2
+            gain_threshold = 0
             for day_number in days_list:
                 #print day_number
                 current_day = int(day_number)
@@ -87,9 +93,9 @@ def main():
                         gain = calculate_gain(project_data, current_day, days_list)
                         if (gain != -1):
                             #print "data point"
-                            if gain > 1 + threshold:
+                            if gain > 1 + gain_threshold:
                                 label = 1
-                            elif gain < 1 -threshold:
+                            elif gain < 1 - gain_threshold:
                                 label = 0
                             else:
                                 continue

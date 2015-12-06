@@ -1,4 +1,5 @@
 import re
+import pickle
 
 concreteness_values = {}
 def init_concreteness_values():
@@ -11,6 +12,10 @@ def init_concreteness_values():
             value = float(value - 400) / 300.0
             concreteness_values[word] = value
 
+liwc_dict = {}
+def init_liwc_features():
+    global liwc_dict
+    liwc_dict = pickle.load(open('liwc_dict.pkl','r'))
 
 def get_concreteness_score(text):
     # remove punctuations and tokenize
@@ -31,12 +36,42 @@ def get_concreteness_score(text):
 
 
 from textblob import TextBlob
-def get_sentiment_score(status):
-    statusString = TextBlob(status)
+def get_sentiment_score(text):
+    statusString = TextBlob(text)
     sentiment = statusString.sentiment
     sentimentPolarityResult = statusString.sentiment.polarity
     sentimentSubjectivityResult = statusString.sentiment.subjectivity
     sentimentPolarityResult = (sentimentPolarityResult + 1.0) / 2
     return sentimentPolarityResult
 
+
+def search_text_in_list(liwc_list,words):
+    
+    for regex_ in liwc_list:
+        if regex_[-1] == '*':
+            regex = '^'+regex_[:-1]
+        else:
+            regex = '^'+regex_+'$'
+        for word in words:
+            match = re.search(regex,word)
+            if match:
+                print 'Matched!',regex
+                return True
+    return False
+    
+def get_liwc_features(text):
+    category_list = ['Posemo']
+    # remove punctuations and tokenize
+    words = re.findall(r'\w+', text,flags = re.UNICODE | re.LOCALE) 
+    # lower case the words   
+    words = map(lambda x : x.lower(), words)
+
+    toReturn = []
+    for category in category_list:
+        match_exists = search_text_in_list(liwc_dict[category],words)
+        toReturn.append(1 if match_exists else 0)
+
+    return toReturn
+        
+init_liwc_features()
 init_concreteness_values()
