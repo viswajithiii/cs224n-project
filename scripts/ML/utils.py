@@ -80,7 +80,7 @@ def get_liwc_features(diff_dict):
         count = search_text_in_list(regex_sets_prefix_dict[category],regex_set_exact_dict[category],diff_dict)
         toReturn.append(count)
 
-    return toReturn
+    return (category_list,toReturn)
 
 def get_diff_dict(text1, text2):
     words1 = re.findall(r'\w+', text1,flags = re.UNICODE | re.LOCALE) 

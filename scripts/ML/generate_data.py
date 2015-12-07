@@ -19,23 +19,28 @@ def get_pledged_amount(project_data, day_number):
     return float(project_data["daily_snapshots"]["%d" % (day_number)]["current_pledged"])
 
 def generate_data_vec(previous_snapshot, current_snapshot):
+    feature_names = []
     features = []
 
     concreteness_feature = get_concreteness_score(current_snapshot["full_description"]) - get_concreteness_score(previous_snapshot["full_description"])
+    feature_names.append('Concreteness')
     features.append(concreteness_feature)
 
     desc_len_feature = float(len(current_snapshot["full_description"]))/ float(len(previous_snapshot["full_description"]))
+    feature_names.append('Description Length Ratio')
     features.append(desc_len_feature)
 
     sentiment_feature = get_sentiment_score(current_snapshot["full_description"]) - get_sentiment_score(previous_snapshot["full_description"]) 
+    feature_names.append('Sentiment')
     features.append(sentiment_feature)
 
     diff_dict = get_diff_dict(previous_snapshot["full_description"], current_snapshot["full_description"])
     liwc_features = get_liwc_features(diff_dict)
-    features.extend(liwc_features)
+    feature_names.extend(liwc_features[0])
+    features.extend(liwc_features[1])
 #    print features
 #    print features
-    return features
+    return (feature_names,features)
 
 def calculate_gain(project_data, current_day, days_list):
     try:
@@ -72,8 +77,9 @@ def main():
     with open(filePath, 'r') as project_file:
         # for each project
         i = 0
-        #lines = project_file.readlines()
-        for line in project_file:
+        lines = project_file.readlines()
+        header_written = False
+        for line in lines:
             print i
             i += 1
             project_data = json.loads(line)
@@ -85,7 +91,7 @@ def main():
             previous_snapshot = None
             days_list = sorted(project_data["daily_snapshots"], key=lambda x: int(x))
             gain_threshold = 0
-            diff_threshold = 0.4
+            diff_threshold = 0
             features = []
             for day_number in days_list:
                 #print day_number
@@ -116,9 +122,20 @@ def main():
                                 continue
                             
                             data_vec = generate_data_vec(previous_snapshot, current_snapshot)
-                            features.append(data_vec)
+                            if not header_written:
+                                header_written = True
+                                feature_names = data_vec[0]
+                                comma = False
+                                for feature_name in feature_names:
+                                    if comma:
+                                        xfile.write(",%s" %(feature_name))
+                                    else:
+                                        comma = True
+                                        xfile.write("%s" % (feature_name))
+                                xfile.write("\n")
+                            features.append(data_vec[1])
                             comma = False
-                            for value in data_vec:
+                            for value in data_vec[1]:
                                 if comma:
                                     xfile.write(",%f" % (value))
                                 else:
