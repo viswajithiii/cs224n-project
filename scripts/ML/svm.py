@@ -1,6 +1,7 @@
 from sklearn import linear_model
 from sklearn import cross_validation
 from sklearn import preprocessing
+from sklearn import svm
 from sklearn.metrics import confusion_matrix
 import sys
 
@@ -41,20 +42,21 @@ def main():
     baseline = float(max(ones, len(y_test) - ones)) / len(y_test)
     print "Baseline = %f" % (baseline)
 
-    log_reg = linear_model.LogisticRegression(C= 1000,n_jobs = -1)
-    log_reg.fit(X_train,y_train)
+    svc = svm.SVC(C=0.001,verbose=True)
+    svc.fit(X_train,y_train)
+    print 'Fitted model. Now running on data ...'
     
-    train_accuracy = log_reg.score(X_train, y_train)
-    test_accuracy = log_reg.score(X_test, y_test)
+    train_accuracy = svc.score(X_train, y_train)
+    test_accuracy = svc.score(X_test, y_test)
     print "Train accuracy = %f" % (train_accuracy)
     print "Test accuracy = %f" % (test_accuracy)
 
-    print log_reg.coef_
-    print log_reg.intercept_
+#    print svc.coef_
+#    print svc.intercept_
 
 
 #    print log_reg.predict(X_test)
-    cm = confusion_matrix(y_test, log_reg.predict(X_test))
+    cm = confusion_matrix(y_test, svc.predict(X_test))
     print cm
     print 'Class\tPrecision\tRecall\t\tF1'
     P0 = float(cm[0][0])/(cm[0][0]+cm[1][0])

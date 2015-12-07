@@ -3,6 +3,8 @@ from sklearn import cross_validation
 from sklearn import ensemble
 from sklearn import preprocessing
 from sklearn.metrics import confusion_matrix
+from sklearn import grid_search
+import sys
 
 def split_comma(string):
     return map(float, str.split(string, ','))
@@ -11,11 +13,18 @@ def get_label(string):
     return int(string)
 
 def main():
+    if len(sys.argv) > 1:
+        Xfilename = sys.argv[1]
+        Yfilename = sys.argv[2]
+    else:
+        Xfilename = 'X.txt'
+        Yfilename = 'y.txt'
+ 
     Xfile = open('X.txt','r')
     Xfile.readline()
     X_original = map(split_comma, Xfile.read().splitlines())
     #print X
-    y = map(get_label, open('y.txt', 'r').read().splitlines())
+    y = map(get_label, open(Yfilename, 'r').read().splitlines())
     #print y
 
     X = preprocessing.normalize(X_original)
@@ -35,7 +44,7 @@ def main():
     baseline = float(max(ones, len(y_test) - ones)) / len(y_test)
     print "Baseline = %f" % (baseline)
 
-    rand_for = ensemble.RandomForestClassifier(max_depth=10)
+    rand_for = ensemble.RandomForestClassifier(n_estimators = 100,max_depth=1000,n_jobs =-1)
     rand_for.fit(X_train,y_train)
 
     train_accuracy = rand_for.score(X_train, y_train)
