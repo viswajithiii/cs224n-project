@@ -10,13 +10,15 @@ def get_label(string):
     return int(string)
 
 def main():
-    X_original = map(split_comma, open('X.txt', 'r').read().splitlines())
+    Xfile = open('X.txt','r')
+    Xfile.readline()
+    X_original = map(split_comma, Xfile.read().splitlines())
     #print X
     y = map(get_label, open('y.txt', 'r').read().splitlines())
     #print y
 
     X = preprocessing.normalize(X_original)
-
+    print len(X_original)
     #m = len(X)
     #partition_point = int(m * 0.7)
     #print "Partition point = %d" % (partition_point)

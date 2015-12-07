@@ -54,6 +54,13 @@ def calculate_gain(project_data, current_day, days_list):
         return -1
     return future_pledged_per_day / past_pledged_per_day
 
+def is_project_successful(project_data):
+
+    ds = project_data['daily_snapshots']
+    last_day = unicode(max([int(a) for a in ds.keys()]))
+    successful = (ds[last_day]['state'] == 'successful')
+    return successful
+
 xfile = open('X.txt', 'w')
 yfile = open('y.txt', 'w')
 
@@ -93,6 +100,7 @@ def main():
             gain_threshold = 0
             diff_threshold = 0
             features = []
+            label_is_gain = False #Label is either gain or successful
             for day_number in days_list:
                 #print day_number
                 current_day = int(day_number)
@@ -107,13 +115,17 @@ def main():
                         #continue
                         difference = float(desc_diff_dict[project_name][day_number])
                         if difference < diff_threshold:
+                            print 'Here'
                             previous_snapshot = current_snapshot
                             continue
                         edit_count += 1
-                        gain = calculate_gain(project_data, current_day, days_list)
+                        if label_is_gain:
+                            gain = calculate_gain(project_data, current_day, days_list)
+                        else:
+                            gain = int(is_project_successful(project_data)) #Hacky, but it works.
                         if (gain != -1):
                             #print "data point"
-                            if gain > 1 + gain_threshold:
+                            if gain >= 1 + gain_threshold:
                                 label = 1
                             elif gain < 1 - gain_threshold:
                                 label = 0
